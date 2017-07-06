@@ -13,12 +13,10 @@
         </div>
          <div class="filter"></div>
       </div>
-      <div class="bg-layer" ref="layer">
-
-      </div>
+      <div class="bg-layer" ref="layer"></div>
       <scroll class="list" :data="songs" ref="list" :probe-type="probeType" :listScroll="listScroll" @scroll="scroll">
          <div class="song-list-wrapper">
-           <song-list :songs="songs"></song-list>
+           <song-list :songs="songs" @select="selectItem"></song-list>
          </div>
          <div class="loading-container">
              <loading v-if="!songs.length"></loading>
@@ -32,6 +30,7 @@ import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import {prefixStyle} from 'common/js/dom'
 import Loading from 'base/loading/loading'
+import {mapActions} from 'vuex'
 
 const RESERVE_HEIGHT = 40
 const transform = prefixStyle('transform')
@@ -69,7 +68,16 @@ export default{
     },
     back () {
       this.$router.back()
-    }
+    },
+    selectItem (song, index) {
+      this.selectPlay({
+        'list': this.songs,
+        'index': index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   mounted () {
     this.imgHeight = this.$refs.Img.clientHeight
