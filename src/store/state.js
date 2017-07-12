@@ -6,8 +6,10 @@ const state = {
   fullScreen: false,
   playlist: [],
   sequenceList: [],
-  mode: playMode,
-  currentIndex: -1
+  mode: playMode.sequence,
+  currentIndex: -1,
+  desc: {},
+  topList: {}
 }
 
 export default state

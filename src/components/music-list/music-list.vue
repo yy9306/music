@@ -6,7 +6,7 @@
       <h1 class="title">{{title}}</h1>
       <div class="bg-image" :style="bgStyle" ref="Img">
         <div class="play-wrapper" v-if="songs.length" ref="playWrapper">
-           <div class="play">
+           <div class="play" @click="random">
                <i class="icon-play"></i>
                <span class="text">随机播放全部</span>
            </div>
@@ -16,7 +16,7 @@
       <div class="bg-layer" ref="layer"></div>
       <scroll class="list" :data="songs" ref="list" :probe-type="probeType" :listScroll="listScroll" @scroll="scroll">
          <div class="song-list-wrapper">
-           <song-list :songs="songs" @select="selectItem"></song-list>
+           <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
          </div>
          <div class="loading-container">
              <loading v-if="!songs.length"></loading>
@@ -31,11 +31,13 @@ import SongList from 'base/song-list/song-list'
 import {prefixStyle} from 'common/js/dom'
 import Loading from 'base/loading/loading'
 import {mapActions} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 
 const RESERVE_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 export default{
+  mixins: [playlistMixin],
   components: {
     Scroll, SongList, Loading
   },
@@ -60,14 +62,28 @@ export default{
     songs: {
       type: Array,
       default: []
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     scroll (pos) {
       this.scrollY = pos.y
     },
     back () {
       this.$router.back()
+    },
+    random () {
+      this.randomPlay({
+        list: this.songs
+      })
     },
     selectItem (song, index) {
       this.selectPlay({
@@ -76,7 +92,8 @@ export default{
       })
     },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   mounted () {
